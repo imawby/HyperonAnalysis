@@ -173,7 +173,7 @@ void SelectionManager::UseGenWeight(bool usegenweight){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-// Apply the signal definition
+// Apply the signal definition preferring sigma zero
 
 void SelectionManager::SetSignal(Event &e){
 
@@ -219,7 +219,7 @@ void SelectionManager::SetSignal(Event &e){
    // Search the list of reco'd tracks for the proton and pion
    bool found_proton=false,found_pion=false;
 
-   if(!e.EventIsSignal) return;
+   if(!e.EventIsSignalSigmaZero) return;
 
    for(size_t i_tr=0;i_tr<e.TracklikePrimaryDaughters.size();i_tr++){
       if(e.TracklikePrimaryDaughters.at(i_tr).HasTruth && e.TracklikePrimaryDaughters.at(i_tr).TrackTruePDG == 2212 && e.TracklikePrimaryDaughters.at(i_tr).TrackTrueOrigin == 2){ 
@@ -232,7 +232,7 @@ void SelectionManager::SetSignal(Event &e){
       }
    }
 
-   e.GoodReco = e.EventIsSignal && found_proton && found_pion; 
+   e.GoodReco = e.EventIsSignalSigmaZero && found_proton && found_pion;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +339,7 @@ bool SelectionManager::FiducialVolumeCut(const Event &e){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-// Apply the three track cut
+// Apply the three or more track cut
 
 bool SelectionManager::TrackCut(const Event &e){
 
@@ -352,11 +352,11 @@ bool SelectionManager::TrackCut(const Event &e){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-// Apply the zero shower cut
+// Apply the one or more shower cut
 
 bool SelectionManager::ShowerCut(const Event &e){
 
-   bool passed = e.NPrimaryShowerDaughters < 1; 
+   bool passed = e.NPrimaryShowerDaughters > 0;
 
    UpdateCut(e,passed,"Showers");
 
