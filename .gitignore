@@ -33,3 +33,5 @@ sites
 
 *.root
 lib/*
+
+data
