@@ -133,17 +133,17 @@ class SelectionManager {
 
    public:
 
-      bool FiducialVolumeCut(const Event &e);
-      bool TrackCut(const Event &e);
-      bool ShowerCut(const Event &e);
-      bool ChooseMuonCandidate(Event &e);
-      bool TrackLengthCut(const Event &e);
-      bool ChooseProtonPionCandidates(Event &e, bool cheat=false);
-      bool AnalysisBDTCut(Event &e);
+      bool FiducialVolumeCut(const Event &e, const int sliceIndex);
+      bool TrackCut(const Event &e, const int sliceIndex);
+      bool ShowerCut(const Event &e, const int sliceIndex);
+      bool ChooseMuonCandidate(Event &e, const int sliceIndex);
+      bool TrackLengthCut(const Event &e, const int sliceIndex);
+      bool ChooseProtonPionCandidates(Event &e, const int sliceIndex, bool cheat=false);
+      bool AnalysisBDTCut(Event &e, const int sliceIndex);
       bool EventListCut(const Event &e);
-      bool ConnectednessTest(const Event &e, int nplanes=1);
-      bool WCut(const Event &e);
-      bool AngleCut(const Event &e);
+      bool ConnectednessTest(const Event &e, const int sliceIndex, int nplanes=1);
+      bool WCut(const Event &e, const int sliceIndex);
+      bool AngleCut(const Event &e, const int sliceIndex);
 
       // Histogram Functions //
 

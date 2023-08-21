@@ -35,8 +35,9 @@ class AnalysisBDTManager {
    private:
 
       std::string fMode;
-
       bool SetVariables(const Event &e);
+      bool SetVariables(const RecoParticle &protonCandidate, const RecoParticle &pionCandidate,
+          const TVector3 &nuVertex3D, const double bdtScore, const double eventWeight);
 
       // Training trees
 
@@ -67,7 +68,9 @@ class AnalysisBDTManager {
 
    public:
       void SetupSelectorBDT(std::string WeightsDir="");
-      double CalculateScore(Event &e);
+
+      double CalculateScore(const RecoParticle &protonCandidate, const RecoParticle &pionCandidate,
+          const TVector3 &nuVertex3D, const double bdtScore, const double eventWeight);
 };
 
 

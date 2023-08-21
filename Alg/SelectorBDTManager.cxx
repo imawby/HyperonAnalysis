@@ -93,14 +93,16 @@ void SelectorBDTManager::SetupTrainingTrees(){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-void SelectorBDTManager::FillTree(const Event &e){
+void SelectorBDTManager::FillTree(const Event &/*e*/){
 
    // Check in the right running mode first
    assert(fMode == "Train");
 
    // Only train this alg on events with real reconstructed decays
-   if(!e.GoodReco) return;
-
+   std::cout << "ISOBEL GOOD RECO ISNT IMPLEMENTED" << std::endl;
+   throw;
+   //if(!e.GoodReco) return;
+   /*
    if( t_Signal == nullptr || t_Background == nullptr ){ std::cout << "Trees not setup, exiting" << std::endl; return; }
 
    // Sort through list of candiadate tracks
@@ -113,17 +115,19 @@ void SelectorBDTManager::FillTree(const Event &e){
          if(!SetVariables(e.TracklikePrimaryDaughters.at(i_tr),e.TracklikePrimaryDaughters.at(j_tr))) continue;
 
          // If these tracks are the correct pair of decay tracks, fill signal tree 
-         if(e.GoodReco && e.TracklikePrimaryDaughters.at(i_tr).Index == e.TrueDecayProtonIndex && e.TracklikePrimaryDaughters.at(j_tr).Index == e.TrueDecayPionIndex)
+
+         if(e.GoodReco && e.TracklikePrimaryDaughters.at(i_tr).TrackVectorIndex == e.TrueDecayProtonIndex && e.TracklikePrimaryDaughters.at(j_tr).TrackVectorIndex == e.TrueDecayPionIndex)
             t_Signal->Fill();         
          else t_Background->Fill();
 
       }
    }
+*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-bool SelectorBDTManager::SetVariables(RecoParticle thisProtonCandidate, RecoParticle thisPionCandidate){
+bool SelectorBDTManager::SetVariables(const RecoParticle &thisProtonCandidate, const RecoParticle &thisPionCandidate){
 
    TVector3 ProtonPosition(thisProtonCandidate.TrackStartX,thisProtonCandidate.TrackStartY,thisProtonCandidate.TrackStartZ);
    TVector3 PionPosition(thisPionCandidate.TrackStartX,thisPionCandidate.TrackStartY,thisPionCandidate.TrackStartZ);
@@ -212,46 +216,56 @@ void SelectorBDTManager::SetAlg(std::string alg){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-std::pair<int,int> SelectorBDTManager::NominateTracks(Event &e){
-
+std::pair<int,int> SelectorBDTManager::NominateTracks(const std::vector<RecoParticle> &tracklikePrimaryChildren,
+   double &bdtScore)
+{
    int i_proton_candidate=-1;
    int i_pion_candidate=-1;
 
    Float_t BDT_Best = -1e10;
 
    //sort through list of candiadate tracks
-   for(size_t i_tr=0;i_tr<e.TracklikePrimaryDaughters.size();i_tr++){
-      for(size_t j_tr=0;j_tr<e.TracklikePrimaryDaughters.size();j_tr++){
-
+   for(size_t i_tr = 0; i_tr < tracklikePrimaryChildren.size(); i_tr++)
+   {
+      for(size_t j_tr=0; j_tr < tracklikePrimaryChildren.size(); j_tr++)
+      {
          if(i_tr == j_tr) continue;
 
          // Returns false if tracks fail PID/separation cuts     
-         if(!SetVariables(e.TracklikePrimaryDaughters.at(i_tr),e.TracklikePrimaryDaughters.at(j_tr))) continue;
+         if(!SetVariables(tracklikePrimaryChildren.at(i_tr), tracklikePrimaryChildren.at(j_tr))) 
+             continue;
 
          //calculate BDT Score
          //double BDT_Score = reader->EvaluateMVA("BDT method");
-         double BDT_Score = reader->EvaluateMVA(Alg + " method");
+         double thisBDTScore = reader->EvaluateMVA(Alg + " method");
 
-         if( BDT_Score > BDT_Best){
+         if (thisBDTScore > BDT_Best)
+         {
             i_proton_candidate = i_tr;
             i_pion_candidate = j_tr;
-            BDT_Best = BDT_Score;
+            BDT_Best = thisBDTScore;
          }
       }
    }
 
-   e.SelectorBDTScore = BDT_Best;
+   bdtScore = BDT_Best;
 
    return std::make_pair(i_proton_candidate,i_pion_candidate);
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-std::pair<int,int> SelectorBDTManager::NominateTracksCheat(Event &e){
+std::pair<int,int> SelectorBDTManager::NominateTracksCheat(const std::vector<RecoParticle> &tracklikePrimaryChildren,
+    double &bdtScore)
+{
+    std::cout << "ISOBEL THIS HASN'T BEEN IMPLEMENTED YET" << std::endl;
+
+    throw;
+
+    return {-1,-1};
 
    // Use truth information to choose the proton/pion candidates
-
+    /*
    if(!e.GoodReco) return {-1,-1};
 
    int i_proton_candidate=-1;
@@ -270,6 +284,7 @@ std::pair<int,int> SelectorBDTManager::NominateTracksCheat(Event &e){
    e.SelectorBDTScore = reader->EvaluateMVA(Alg + " method"); 
 
    return std::make_pair(i_proton_candidate,i_pion_candidate);
+    */
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

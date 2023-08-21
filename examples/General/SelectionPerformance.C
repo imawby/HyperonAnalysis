@@ -12,11 +12,19 @@ R__LOAD_LIBRARY($HYP_TOP/lib/libParticleDict.so)
 
 #include "BayesianPosteriorPDF.h"
 
+bool CHEAT_SLICE_MODE = false;
+bool NORMAL_SLICE_MODE = false;
+bool RUN_OVER_ALL_SLICE = false;
+
    // Produces graph with efficiency, purity and S/sqrt(S+B)
    // for each step of the selection and prints lots of
    // performance metrics.
 
-   void SelectionPerformance(){
+void SelectionPerformance()
+{
+      std::cout << "\033[31m" << "CHEAT_SLICE_MODE? " << "\033[33m" << (CHEAT_SLICE_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
+      std::cout << "\033[31m" << "NORMAL_SLICE_MODE? " << "\033[33m" << (NORMAL_SLICE_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
+      std::cout << "\033[31m" << "RUN_OVER_ALL_SLICE? " << "\033[33m" << (RUN_OVER_ALL_SLICE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
 
       // Diables TEfficiency warnings
       gErrorIgnoreLevel = kWarning;
@@ -25,29 +33,26 @@ R__LOAD_LIBRARY($HYP_TOP/lib/libParticleDict.so)
 
       BuildTunes();
 
-      SampleNames.push_back("GENIE Background");
-      SampleTypes.push_back("Background");
-      /* SampleFiles.push_back("run1_FHC/analysisOutputFHC_Overlay_GENIE_Background_All.root"); */
-      SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Background_All.root");
+      //SampleNames.push_back("GENIE Background");
+      //SampleTypes.push_back("Background");
+      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Background_All.root");
 
-      SampleNames.push_back("GENIE Hyperon");
-      SampleTypes.push_back("Hyperon");
-      /* SampleFiles.push_back("run1_FHC/analysisOutputFHC_Overlay_GENIE_Hyperon_All.root"); */
-      SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Hyperon_All.root");
+      //SampleNames.push_back("GENIE Hyperon");
+      //SampleTypes.push_back("Hyperon");
+      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Hyperon_All.root");
 
-      SampleNames.push_back("GENIE Neutron");
-      SampleTypes.push_back("Neutron");
-      SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Neutron_All.root");
+      //SampleNames.push_back("GENIE Neutron");
+      //SampleTypes.push_back("Neutron");
+      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Neutron_All.root");
 
-      SampleNames.push_back("GENIE Dirt");
-      SampleTypes.push_back("Dirt");
-      SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Dirt_prodgenie_numi_uboone_overlay_dirt_rhc_mcc9_run3b_v28_sample0.root");
+      //SampleNames.push_back("GENIE Dirt");
+      //SampleTypes.push_back("Dirt");
+      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Dirt_prodgenie_numi_uboone_overlay_dirt_rhc_mcc9_run3b_v28_sample0.root");
 
-      /* SampleNames.push_back("EXT"); */
-      /* SampleTypes.push_back("EXT"); */
-      /* SampleFiles.push_back("run3b_RHC/analysisOutputEXT_prod_extnumi_mcc9_v08_00_00_45_run3_run3b_reco2_all_reco2.root"); */
+      //SampleNames.push_back("EXT");
+      //SampleTypes.push_back("EXT");
+      //SampleFiles.push_back("run3b_RHC/analysisOutputEXT_prod_extnumi_mcc9_v08_00_00_45_run3_run3b_reco2_all_reco2.root");
 
-      /* SelectionParameters P = P_FHC_Tune_325_NoBDT; */
       SelectionParameters P = P_RHC_Tune_397_NoBDT;
 
       std::string label = "test";
@@ -62,17 +67,18 @@ R__LOAD_LIBRARY($HYP_TOP/lib/libParticleDict.so)
       TEfficiency* Background_Acceptance = new TEfficiency("Background_Acceptance","",9,-0.5,8.5);
 
       // Sample Loop
-      for(size_t i_s=0;i_s<SampleNames.size();i_s++){
-
+      for (size_t i_s = 0; i_s < SampleNames.size(); i_s++)
+      {
          E.SetFile(SampleFiles.at(i_s), SampleTypes.at(i_s));
+
          if(SampleTypes.at(i_s) != "EXT" && SampleTypes.at(i_s) != "Data") M.AddSample(SampleNames.at(i_s),SampleTypes.at(i_s),E.GetPOT());
          else if(SampleTypes.at(i_s) == "Data") M.AddSample(SampleNames.at(i_s),SampleTypes.at(i_s),Data_POT);
          else if(SampleTypes.at(i_s) == "EXT") M.AddSample(SampleNames.at(i_s),SampleTypes.at(i_s),EXT_POT);
 
          // Event Loop
-         for(int i=0;i<E.GetNEvents();i++){
-
-            if(i % 10000 == 0) std::cout << "Processing event " << i << "/" << E.GetNEvents() << std::endl;
+         for(int i = 0; i < E.GetNEvents(); i++)
+         {
+            if (i % 10000 == 0) std::cout << "Processing event " << i << "/" << E.GetNEvents() << std::endl;
 
             Event e = E.GetEvent(i);
             M.SetSignal(e);
@@ -80,21 +86,30 @@ R__LOAD_LIBRARY($HYP_TOP/lib/libParticleDict.so)
 
             bool passed_FV=false,passed_Tracks=false,passed_Showers=false,passed_MuonID=false,passed_Selector=false,passed_Connectedness=false,passed_WCut=false,passed_AngleCut=false;
 
-            passed_FV = M.FiducialVolumeCut(e);
-            if(passed_FV) passed_Tracks = M.TrackCut(e);
-            if(passed_Tracks) passed_Showers = M.ShowerCut(e);
-            if(passed_Showers) passed_MuonID = M.ChooseMuonCandidate(e);
+            for (unsigned int iSlice = 0; iSlice < e.SliceID; ++iSlice)
+            {
+                if (CHEAT_SLICE_MODE && (e.SliceID.at(iSlice) != e.TrueNuSliceID))
+                    continue;
+
+                if (NORMAL_SLICE_MODE && (e.SliceID.at(iSlice) != e.ChoosenNuSliceID))
+                    continue;
+
+                passed_FV = M.FiducialVolumeCut(e, iSlice);
+                //if(passed_FV) passed_Tracks = M.TrackCut(e);
+                //if(passed_Tracks) passed_Showers = M.ShowerCut(e);
+                //if(passed_Showers) passed_MuonID = M.ChooseMuonCandidate(e);
             /* if(passed_MuonID) passed_Selector = M.ChooseProtonPionCandidates(e); */
             /* if(passed_Selector) passed_Connectedness = M.ConnectednessTest(e); */
             /* if(passed_Connectedness) passed_WCut = M.WCut(e); */
             /* if(passed_WCut) passed_AngleCut = M.AngleCut(e); */
 
+                
             if(e.EventIsSignalSigmaZero){
                Eff->FillWeighted(true,e.Weight,0);
                Eff->FillWeighted(passed_FV,e.Weight,1);
-               Eff->FillWeighted(passed_Tracks,e.Weight,2);
-               Eff->FillWeighted(passed_Showers,e.Weight,3);
-               Eff->FillWeighted(passed_MuonID,e.Weight,4);
+               //Eff->FillWeighted(passed_Tracks,e.Weight,2);
+               //Eff->FillWeighted(passed_Showers,e.Weight,3);
+               //Eff->FillWeighted(passed_MuonID,e.Weight,4);
                /* Eff->FillWeighted(passed_Selector,e.Weight,5); */
                /* Eff->FillWeighted(passed_Connectedness,e.Weight,6); */
                /* Eff->FillWeighted(passed_WCut,e.Weight,7); */
@@ -103,13 +118,14 @@ R__LOAD_LIBRARY($HYP_TOP/lib/libParticleDict.so)
             else {
                Background_Acceptance->FillWeighted(true,e.Weight,0);
                Background_Acceptance->FillWeighted(passed_FV,e.Weight,1);
-               Background_Acceptance->FillWeighted(passed_Tracks,e.Weight,2);
-               Background_Acceptance->FillWeighted(passed_Showers,e.Weight,3);
-               Background_Acceptance->FillWeighted(passed_MuonID,e.Weight,4);
+               //Background_Acceptance->FillWeighted(passed_Tracks,e.Weight,2);
+               //Background_Acceptance->FillWeighted(passed_Showers,e.Weight,3);
+               //Background_Acceptance->FillWeighted(passed_MuonID,e.Weight,4);
                /* Background_Acceptance->FillWeighted(passed_Selector,e.Weight,5); */
                /* Background_Acceptance->FillWeighted(passed_Connectedness,e.Weight,6); */
                /* Background_Acceptance->FillWeighted(passed_WCut,e.Weight,7); */
                /* Background_Acceptance->FillWeighted(passed_AngleCut,e.Weight,8); */
+            }
             }
          }
          E.Close();

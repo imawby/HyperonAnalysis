@@ -40,7 +40,7 @@ class SelectorBDTManager {
       double fPionPIDCut;
       double fSeparationCut;
 
-      bool SetVariables(RecoParticle thisProtonCandidate, RecoParticle thisPionCandidate);
+      bool SetVariables(const RecoParticle &thisProtonCandidate, const RecoParticle &thisPionCandidate);
 
       // Training trees
 
@@ -73,8 +73,10 @@ class SelectorBDTManager {
 
       void SetupSelectorBDT(std::string WeightsDir="",std::string alg="BDT");
       void SetAlg(std::string alg);
-      std::pair<int,int> NominateTracks(Event &e);      
-      std::pair<int,int> NominateTracksCheat(Event &e);
+      std::pair<int,int> NominateTracks(const std::vector<RecoParticle> &tracklikePrimaryChildren,
+          double &bdtScore);
+      std::pair<int,int> NominateTracksCheat(const std::vector<RecoParticle> &tracklikePrimaryChildren,
+          double &bdtScore);
       double GetScore(RecoParticle DecayProtonCandidate,RecoParticle DecayPionCandidate);
 
 };

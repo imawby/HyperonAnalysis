@@ -73,7 +73,6 @@ class EventAssembler {
       vector<bool>* IsAssociatedHyperon=0;
       vector<bool>* IsSignal=0;
       vector<bool>* IsSignalSigmaZero=0;
-      Bool_t GoodReco;
       Bool_t EventHasNeutronScatter;
       Bool_t EventHasHyperon;
 
@@ -96,28 +95,46 @@ class EventAssembler {
       vector<double>  *DecayVertex_Y=0;
       vector<double>  *DecayVertex_Z=0;
 
-      // Reco variables
-      TVector3* RecoPrimaryVertex=0;
-      Int_t NPrimaryTrackDaughters;
-      Int_t NPrimaryShowerDaughters;
-      std::vector<RecoParticle>* TracklikePrimaryDaughters=0;
-      std::vector<RecoParticle>* ShowerlikePrimaryDaughters=0;
+      ////////////////////////////
+      //   Output for each slice
+      ////////////////////////////
+      int ChoosenNuSliceID;
+      int TrueNuSliceID;
+      int TrueMuonTrackID;
+      int TrueProtonTrackID;
+      int TruePionTrackID;
+      int TrueGammaTrackID;
 
-      vector<vector<int>>* ConnSeedIndexes_Plane0=0;
-      vector<vector<int>>* ConnOutputIndexes_Plane0=0;
-      vector<vector<int>>* ConnOutputSizes_Plane0=0;
-      vector<vector<int>>* ConnSeedChannels_Plane0=0;
-      vector<vector<int>>* ConnSeedTicks_Plane0=0;
-      vector<vector<int>>* ConnSeedIndexes_Plane1=0;
-      vector<vector<int>>* ConnOutputIndexes_Plane1=0;
-      vector<vector<int>>* ConnOutputSizes_Plane1=0;
-      vector<vector<int>>* ConnSeedChannels_Plane1=0;
-      vector<vector<int>>* ConnSeedTicks_Plane1=0;
-      vector<vector<int>>* ConnSeedIndexes_Plane2=0;
-      vector<vector<int>>* ConnOutputIndexes_Plane2=0;
-      vector<vector<int>>* ConnOutputSizes_Plane2=0;
-      vector<vector<int>>* ConnSeedChannels_Plane2=0;
-      vector<vector<int>>* ConnSeedTicks_Plane2=0;
+      std::vector<int> *SliceID = nullptr;
+      std::vector<bool> *GoodReco = nullptr;
+
+      std::vector<int> *NPrimaryDaughters = nullptr;
+      std::vector<int> *NPrimaryTrackDaughters = nullptr;
+      std::vector<int> *NPrimaryShowerDaughters = nullptr;
+      std::vector<std::vector<RecoParticle>> *TracklikePrimaryDaughters = nullptr;
+      std::vector<std::vector<RecoParticle>> *ShowerlikePrimaryDaughters = nullptr;   
+
+      std::vector<double> *RecoPrimaryVertexX = nullptr;
+      std::vector<double> *RecoPrimaryVertexY = nullptr;
+      std::vector<double> *RecoPrimaryVertexZ = nullptr;
+
+      std::vector<std::vector<std::vector<int>>> *ConnSeedIndexes_Plane0 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnOutputIndexes_Plane0 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnOutputSizes_Plane0 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnSeedChannels_Plane0 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnSeedTicks_Plane0 = nullptr;
+
+      std::vector<std::vector<std::vector<int>>> *ConnSeedIndexes_Plane1 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnOutputIndexes_Plane1 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnOutputSizes_Plane1 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnSeedChannels_Plane1 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnSeedTicks_Plane1 = nullptr;
+
+      std::vector<std::vector<std::vector<int>>> *ConnSeedIndexes_Plane2 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnOutputIndexes_Plane2 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnOutputSizes_Plane2 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnSeedChannels_Plane2 = nullptr;
+      std::vector<std::vector<std::vector<int>>> *ConnSeedTicks_Plane2 = nullptr;
 
       // Systematics
       vector<string>* SysDials=0;

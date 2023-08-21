@@ -94,33 +94,65 @@ void AnalysisBDTManager::FillTree(const Event &e){
 
    if(!SetVariables(e)) return;
 
-    if(e.EventIsSignal) t_Signal->Fill();
+   if(e.EventIsSignal) t_Signal->Fill();
    else t_Background->Fill();
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-bool AnalysisBDTManager::SetVariables(const Event &e){
+bool AnalysisBDTManager::SetVariables(const Event &e)
+{
+    for (unsigned int sliceIndex = 0; sliceIndex < e.SliceID.size(); ++sliceIndex)
+    {
+       if (e.SliceID.at(sliceIndex) != e.TrueNuSliceID)
+           continue;
 
-   SecondaryVertex V = Fitter.MakeVertex(e.DecayProtonCandidate,e.DecayPionCandidate);
+       SecondaryVertex V = Fitter.MakeVertex(e.DecayProtonCandidate.at(sliceIndex), e.DecayPionCandidate.at(sliceIndex));
+
+       // Reject if fit failed
+       //if(!V.fitStatus) return false;
+
+       TVector3 gap_vector = V.Vertex - e.RecoPrimaryVertex.at(sliceIndex);
+       TLorentzVector lambda4momentum = ProtonPion4Momentum(e.DecayProtonCandidate.at(sliceIndex), e.DecayPionCandidate.at(sliceIndex));
+       TVector3 lambdadirection(lambda4momentum.X(), lambda4momentum.Y(), lambda4momentum.Z());
+
+       lambdadirection *= 1.0/lambdadirection.Mag();
+       v_w = ProtonPionInvariantMass(e.DecayProtonCandidate.at(sliceIndex), e.DecayPionCandidate.at(sliceIndex));
+       v_gap = gap_vector.Mag();
+       v_bdt_score = e.SelectorBDTScore.at(sliceIndex);
+       v_lambda_angle = (180/3.142)*lambdadirection.Angle(gap_vector);
+       v_lambda_V_crossing_dist = V.CrossingDist;
+       v_weight = e.Weight;
+
+       break;
+    }
+
+    return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+bool AnalysisBDTManager::SetVariables(const RecoParticle &protonCandidate, const RecoParticle &pionCandidate,
+   const TVector3 &nuVertex3D, const double bdtScore, const double eventWeight)
+{
+   SecondaryVertex V = Fitter.MakeVertex(protonCandidate, pionCandidate);
 
    // Reject if fit failed
    //if(!V.fitStatus) return false;
 
-   TVector3 gap_vector = V.Vertex - e.RecoPrimaryVertex;
-
-   TLorentzVector lambda4momentum = ProtonPion4Momentum(e.DecayProtonCandidate,e.DecayPionCandidate);
+   TVector3 gap_vector = V.Vertex - nuVertex3D;
+   TLorentzVector lambda4momentum = ProtonPion4Momentum(protonCandidate, pionCandidate);
    TVector3 lambdadirection(lambda4momentum.X(),lambda4momentum.Y(),lambda4momentum.Z());
 
    lambdadirection *= 1.0/lambdadirection.Mag();
-
-   v_w = ProtonPionInvariantMass(e.DecayProtonCandidate,e.DecayPionCandidate);
+   v_w = ProtonPionInvariantMass(protonCandidate, pionCandidate);
    v_gap = gap_vector.Mag();   
-   v_bdt_score = e.SelectorBDTScore; 
+   v_bdt_score = bdtScore; 
    v_lambda_angle = (180/3.142)*lambdadirection.Angle(gap_vector);
    v_lambda_V_crossing_dist = V.CrossingDist;
-   v_weight = e.Weight;
+   v_weight = eventWeight;
 
    return true;
 
@@ -165,13 +197,13 @@ void AnalysisBDTManager::SetupAnalysisBDT(std::string WeightsDir){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-double AnalysisBDTManager::CalculateScore(Event &e){
-
-   if(!SetVariables(e)) return -1.0;
+double AnalysisBDTManager::CalculateScore(const RecoParticle &protonCandidate, const RecoParticle &pionCandidate,
+   const TVector3 &nuVertex3D, const double bdtScore, const double eventWeight)
+{
+    if(!SetVariables(protonCandidate, pionCandidate, nuVertex3D, bdtScore, eventWeight)) 
+        return -1.0;
 
    double score = reader->EvaluateMVA("BDT method");
-
-   e.AnalysisBDTScore = score;
 
    return score;
 

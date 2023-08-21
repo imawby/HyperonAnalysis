@@ -34,6 +34,7 @@ void EventAssembler::SetFile(string infilename,string sampletype){
 
    nEvents = t_in->GetEntries();
 
+   // Set Branch Status
    t_in->SetBranchStatus("Neutrino",1);
    t_in->SetBranchStatus("Lepton",1);
    t_in->SetBranchStatus("Hyperon",1);
@@ -65,7 +66,6 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchStatus("IsAssociatedHyperon",1);
    t_in->SetBranchStatus("IsSignal",1);
    t_in->SetBranchStatus("IsSignalSigmaZero",1);
-   t_in->SetBranchStatus("GoodReco",1);
    t_in->SetBranchStatus("EventHasNeutronScatter",1);
    t_in->SetBranchStatus("EventHasHyperon",1);
    t_in->SetBranchStatus("TruePrimaryVertex_X",1);
@@ -74,28 +74,44 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchStatus("DecayVertex_X",1);
    t_in->SetBranchStatus("DecayVertex_Y",1);
    t_in->SetBranchStatus("DecayVertex_Z",1);
-   t_in->SetBranchStatus("RecoPrimaryVertex",1);
-   t_in->SetBranchStatus("NPrimaryTrackDaughters",1);
-   t_in->SetBranchStatus("NPrimaryShowerDaughters",1);
-   t_in->SetBranchStatus("ConnSeedIndexes_Plane0",1);
-   t_in->SetBranchStatus("ConnOutputIndexes_Plane0",1);
-   t_in->SetBranchStatus("ConnOutputSizes_Plane0",1);
-   t_in->SetBranchStatus("ConnSeedChannels_Plane0",1);
-   t_in->SetBranchStatus("ConnSeedTicks_Plane0",1);
-   t_in->SetBranchStatus("ConnSeedIndexes_Plane1",1);
-   t_in->SetBranchStatus("ConnOutputIndexes_Plane1",1);
-   t_in->SetBranchStatus("ConnOutputSizes_Plane1",1);
-   t_in->SetBranchStatus("ConnSeedChannels_Plane1",1);
-   t_in->SetBranchStatus("ConnSeedTicks_Plane1",1);
-   t_in->SetBranchStatus("ConnSeedIndexes_Plane2",1);
-   t_in->SetBranchStatus("ConnOutputIndexes_Plane2",1);
-   t_in->SetBranchStatus("ConnOutputSizes_Plane2",1);
-   t_in->SetBranchStatus("ConnSeedChannels_Plane2",1);
-   t_in->SetBranchStatus("ConnSeedTicks_Plane2",1);
-   if(LoadWeights){
-   t_in->SetBranchStatus("SysDials",1);
-   t_in->SetBranchStatus("SysWeights",1);
+   t_in->SetBranchStatus("ChoosenNuSliceID", 1);
+   t_in->SetBranchStatus("SliceID", 1);
+   t_in->SetBranchStatus("TrueNuSliceID", 1);
+   t_in->SetBranchStatus("TrueMuonTrackID", 1);
+   t_in->SetBranchStatus("TrueProtonTrackID", 1);
+   t_in->SetBranchStatus("TruePionTrackID", 1);
+   t_in->SetBranchStatus("TrueGammaTrackID", 1);
+   t_in->SetBranchStatus("GoodReco", 1);
+   t_in->SetBranchStatus("RecoPrimaryVertexX", 1);
+   t_in->SetBranchStatus("RecoPrimaryVertexY", 1);
+   t_in->SetBranchStatus("RecoPrimaryVertexZ", 1);
+   t_in->SetBranchStatus("NPrimaryTrackDaughters", 1);
+   t_in->SetBranchStatus("NPrimaryShowerDaughters", 1);
+   t_in->SetBranchStatus("TracklikePrimaryDaughters", 1);
+   t_in->SetBranchStatus("ShowerlikePrimaryDaughters", 1);
+   t_in->SetBranchStatus("ConnSeedIndexes_Plane0", 1);
+   t_in->SetBranchStatus("ConnOutputIndexes_Plane0", 1);
+   t_in->SetBranchStatus("ConnOutputSizes_Plane0", 1);
+   t_in->SetBranchStatus("ConnSeedChannels_Plane0", 1);
+   t_in->SetBranchStatus("ConnSeedTicks_Plane0", 1);
+   t_in->SetBranchStatus("ConnSeedIndexes_Plane1", 1);
+   t_in->SetBranchStatus("ConnOutputIndexes_Plane1", 1);
+   t_in->SetBranchStatus("ConnOutputSizes_Plane1", 1);
+   t_in->SetBranchStatus("ConnSeedChannels_Plane1", 1);
+   t_in->SetBranchStatus("ConnSeedTicks_Plane1", 1);
+   t_in->SetBranchStatus("ConnSeedIndexes_Plane2", 1);
+   t_in->SetBranchStatus("ConnOutputIndexes_Plane2", 1);
+   t_in->SetBranchStatus("ConnOutputSizes_Plane2", 1);
+   t_in->SetBranchStatus("ConnSeedChannels_Plane2", 1);
+   t_in->SetBranchStatus("ConnSeedTicks_Plane2", 1);
+
+   if(LoadWeights)
+   {
+       t_in->SetBranchStatus("SysDials",1);
+       t_in->SetBranchStatus("SysWeights",1);
    }
+
+   // Set Branch Addresses
    t_in->SetBranchAddress("IsData", &IsData);
    t_in->SetBranchAddress("EventID", &EventID);
    t_in->SetBranchAddress("run", &run);
@@ -115,7 +131,6 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchAddress("IsAssociatedHyperon", &IsAssociatedHyperon);
    t_in->SetBranchAddress("IsSignal", &IsSignal);
    t_in->SetBranchAddress("IsSignalSigmaZero", &IsSignalSigmaZero);
-   t_in->SetBranchAddress("GoodReco", &GoodReco);
    t_in->SetBranchAddress("EventHasNeutronScatter", &EventHasNeutronScatter);
    t_in->SetBranchAddress("EventHasHyperon", &EventHasHyperon);
 
@@ -138,11 +153,24 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchAddress("DecayVertex_Y", &DecayVertex_Y);
    t_in->SetBranchAddress("DecayVertex_Z", &DecayVertex_Z);
 
-   t_in->SetBranchAddress("RecoPrimaryVertex", &RecoPrimaryVertex);
+   t_in->SetBranchAddress("ChoosenNuSliceID", &ChoosenNuSliceID);
+   t_in->SetBranchAddress("TrueNuSliceID", &TrueNuSliceID);
+   t_in->SetBranchAddress("TrueMuonTrackID", &TrueMuonTrackID);
+   t_in->SetBranchAddress("TrueProtonTrackID", &TrueProtonTrackID);
+   t_in->SetBranchAddress("TruePionTrackID", &TruePionTrackID);
+   t_in->SetBranchAddress("TrueGammaTrackID", &TrueGammaTrackID);
+   t_in->SetBranchAddress("SliceID", &SliceID);
+   t_in->SetBranchAddress("GoodReco", &GoodReco);
+
+   t_in->SetBranchAddress("NPrimaryDaughters", &NPrimaryDaughters);
    t_in->SetBranchAddress("NPrimaryTrackDaughters", &NPrimaryTrackDaughters);
    t_in->SetBranchAddress("NPrimaryShowerDaughters", &NPrimaryShowerDaughters);
-   t_in->SetBranchAddress("TracklikePrimaryDaughters",&TracklikePrimaryDaughters);
-   t_in->SetBranchAddress("ShowerlikePrimaryDaughters",&ShowerlikePrimaryDaughters);
+   t_in->SetBranchAddress("TracklikePrimaryDaughters", &TracklikePrimaryDaughters);
+   t_in->SetBranchAddress("ShowerlikePrimaryDaughters", &ShowerlikePrimaryDaughters);
+
+   t_in->SetBranchAddress("RecoPrimaryVertexX", &RecoPrimaryVertexX);
+   t_in->SetBranchAddress("RecoPrimaryVertexY", &RecoPrimaryVertexY);
+   t_in->SetBranchAddress("RecoPrimaryVertexZ", &RecoPrimaryVertexZ);
                
    t_in->SetBranchAddress("ConnSeedIndexes_Plane0", &ConnSeedIndexes_Plane0);
    t_in->SetBranchAddress("ConnOutputIndexes_Plane0", &ConnOutputIndexes_Plane0);
@@ -159,12 +187,14 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchAddress("ConnOutputSizes_Plane2", &ConnOutputSizes_Plane2);
    t_in->SetBranchAddress("ConnSeedChannels_Plane2", &ConnSeedChannels_Plane2);
    t_in->SetBranchAddress("ConnSeedTicks_Plane2", &ConnSeedTicks_Plane2);
-   if(LoadWeights){
-   t_in->SetBranchAddress("SysDials", &SysDials);
-   t_in->SetBranchAddress("SysWeights", &SysWeights);
-   }
-   // Get the metadata tree
 
+   if (LoadWeights)
+   {
+       t_in->SetBranchAddress("SysDials", &SysDials);
+       t_in->SetBranchAddress("SysWeights", &SysWeights);
+   }
+
+   // Get the metadata tree
    f_in->GetObject("ana/MetaTree",t_meta);
    t_meta->SetBranchAddress("POT",&POT);
 }
@@ -215,20 +245,23 @@ Event EventAssembler::GetEvent(int i){
 
    t_in->GetEntry(i);
 
+   // General Info
    e.IsData = IsData;
    e.run = run;
    e.subrun = subrun;
    e.event = event;
-
    e.Weight = Weight;
-   e.Mode = *Mode;
 
    // Special cases of "interaction mode"
    if(SampleType == "Data") e.Mode = {"Data"};
    else if(SampleType == "EXT") e.Mode = {"EXT"};
    else if(SampleType == "Dirt") e.Mode = {"Dirt"};
 
+   // Event flags
    e.CCNC = *CCNC;
+   e.Mode = *Mode;
+   e.NMCTruths = NMCTruths;
+   e.NMCTruthsInTPC = NMCTruthsInTPC;
    e.InActiveTPC = *InActiveTPC;
    e.IsHyperon = *IsHyperon;
    e.IsLambda = *IsLambda;
@@ -238,18 +271,10 @@ Event EventAssembler::GetEvent(int i){
    e.IsSignal = *IsSignal;
    e.IsSignalSigmaZero = *IsSignalSigmaZero;
    e.IsAssociatedHyperon = *IsAssociatedHyperon;
-   e.GoodReco = GoodReco;
    e.EventHasNeutronScatter = EventHasNeutronScatter;
    e.EventHasHyperon = EventHasHyperon;
 
-   e.NMCTruths = NMCTruths;
-   e.NMCTruthsInTPC = NMCTruthsInTPC;
-
-   e.TruePrimaryVertex.clear();
-
-   for(size_t i_v=0;i_v<TruePrimaryVertex_X->size();i_v++)
-      e.TruePrimaryVertex.push_back(TVector3(TruePrimaryVertex_X->at(i_v),TruePrimaryVertex_Y->at(i_v),TruePrimaryVertex_Z->at(i_v)));
-
+   // Truth variables
    e.Neutrino = *Neutrino;
    e.Lepton = *Lepton;
    e.Hyperon = *Hyperon;
@@ -261,18 +286,30 @@ Event EventAssembler::GetEvent(int i){
    e.SigmaZeroDecayPhoton = *SigmaZeroDecayPhoton;
    e.KaonDecay = *KaonDecay;
 
+   e.TruePrimaryVertex.clear();
    e.DecayVertex.clear();
 
-   for(size_t i_v=0;i_v<DecayVertex_X->size();i_v++)
-      e.DecayVertex.push_back(TVector3(DecayVertex_X->at(i_v),DecayVertex_Y->at(i_v),DecayVertex_Z->at(i_v)));
+   for (size_t i_v = 0; i_v < TruePrimaryVertex_X->size(); i_v++)
+      e.TruePrimaryVertex.push_back(TVector3(TruePrimaryVertex_X->at(i_v), TruePrimaryVertex_Y->at(i_v), TruePrimaryVertex_Z->at(i_v)));
 
-   e.RecoPrimaryVertex = *RecoPrimaryVertex;
-   e.NPrimaryTrackDaughters = NPrimaryTrackDaughters;
-   e.NPrimaryShowerDaughters = NPrimaryShowerDaughters;
+   for(size_t i_v = 0; i_v < DecayVertex_X->size(); i_v++)
+      e.DecayVertex.push_back(TVector3(DecayVertex_X->at(i_v), DecayVertex_Y->at(i_v), DecayVertex_Z->at(i_v)));
 
+   ////////////////////////////
+   //   Output for each slice
+   ////////////////////////////
+   e.ChoosenNuSliceID = ChoosenNuSliceID;
+   e.TrueNuSliceID = TrueNuSliceID;
+   e.TrueMuonTrackID = TrueMuonTrackID;
+   e.TrueProtonTrackID = TrueProtonTrackID;
+   e.TruePionTrackID = TruePionTrackID;
+   e.TrueGammaTrackID = TrueGammaTrackID;
+   e.SliceID = *SliceID;
+   e.GoodReco = *GoodReco;
+   e.NPrimaryTrackDaughters = *NPrimaryTrackDaughters;
+   e.NPrimaryShowerDaughters = *NPrimaryShowerDaughters;
    e.TracklikePrimaryDaughters = *TracklikePrimaryDaughters;
    e.ShowerlikePrimaryDaughters = *ShowerlikePrimaryDaughters;
-
    e.ConnSeedIndexes_Plane0 = *ConnSeedIndexes_Plane0;
    e.ConnOutputIndexes_Plane0 = *ConnOutputIndexes_Plane0;
    e.ConnOutputSizes_Plane0 = *ConnOutputSizes_Plane0;
@@ -289,9 +326,32 @@ Event EventAssembler::GetEvent(int i){
    e.ConnSeedChannels_Plane2 = *ConnSeedChannels_Plane2;
    e.ConnSeedTicks_Plane2 = *ConnSeedTicks_Plane2;
 
-   if(LoadWeights){
-   e.SysDials = *SysDials;
-   e.SysWeights = *SysWeights;
+   e.RecoPrimaryVertex.clear();
+
+   for (unsigned int iVertex = 0; iVertex < RecoPrimaryVertexX->size(); ++iVertex)
+       e.RecoPrimaryVertex.push_back(TVector3(RecoPrimaryVertexX->at(iVertex), RecoPrimaryVertexY->at(iVertex), RecoPrimaryVertexZ->at(iVertex)));
+
+   // Selection stuff
+   e.MuonCandidate.clear();
+   e.MuonCandidate.resize(e.SliceID.size());
+
+   e.DecayProtonCandidate.clear();
+   e.DecayProtonCandidate.resize(e.SliceID.size());
+
+   e.DecayPionCandidate.clear();
+   e.DecayPionCandidate.resize(e.SliceID.size());
+
+   e.SelectorBDTScore.clear();
+   e.SelectorBDTScore.resize(e.SliceID.size(), -999.0);
+
+   e.AnalysisBDTScore.clear();
+   e.AnalysisBDTScore.resize(e.SliceID.size());
+
+   // Systematics
+   if(LoadWeights)
+   {
+       e.SysDials = *SysDials;
+       e.SysWeights = *SysWeights;
    }
 
    return e;

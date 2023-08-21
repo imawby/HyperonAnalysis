@@ -21,29 +21,27 @@ struct Event {
 	Int_t fileID;
 	double Weight=1.0;
 
-        // Flags applying to the entire event
-        Bool_t EventIsSignal = false;
-        Bool_t EventHasHyperon = false;
-        Bool_t EventHasNeutronScatter = false;
-        Bool_t EventIsSignalSigmaZero = false;
+    // Flags applying to the entire event
+    Bool_t EventIsSignal = false;
+    Bool_t EventHasHyperon = false;
+    Bool_t EventHasNeutronScatter = false;
+    Bool_t EventIsSignalSigmaZero = false;
 
-        // Flags for each MCTruth
-        vector<string> Mode;
-        vector<string> CCNC;
-        Int_t NMCTruths;
-        Int_t NMCTruthsInTPC;
-        vector<bool> InActiveTPC;
-        vector<bool> IsHyperon;
-        vector<bool> IsLambda;
-        vector<bool> IsLambdaCharged;
-        vector<bool> IsSigmaZero;
-        vector<bool> IsSigmaZeroCharged;
-        vector<bool> IsAssociatedHyperon;
-        vector<bool> IsSignal;
-        vector<bool> IsSignalSigmaZero;
-        Bool_t GoodReco;
-                
-        vector<TVector3> TruePrimaryVertex;
+    // Flags for each MCTruth
+    vector<string> Mode;
+    vector<string> CCNC;
+    Int_t NMCTruths;
+    Int_t NMCTruthsInTPC;
+    vector<bool> InActiveTPC;
+    vector<bool> IsHyperon;
+    vector<bool> IsLambda;
+    vector<bool> IsLambdaCharged;
+    vector<bool> IsSigmaZero;
+    vector<bool> IsSigmaZeroCharged;
+    vector<bool> IsAssociatedHyperon;
+    vector<bool> IsSignal;
+    vector<bool> IsSignalSigmaZero;
+    vector<TVector3> TruePrimaryVertex;
 
 	//true variables
 	std::vector<SimParticle> Neutrino;
@@ -57,48 +55,60 @@ struct Event {
 	std::vector<SimParticle> SigmaZeroDecayPhoton;
 	std::vector<SimParticle> KaonDecay;
 
-        vector<TVector3> DecayVertex;
+    vector<TVector3> DecayVertex;
 
-	TVector3 RecoPrimaryVertex;
-	Int_t NPrimaryTrackDaughters;
-	Int_t NPrimaryShowerDaughters;
+    ////////////////////////////
+    //   Output for each slice
+    ////////////////////////////
+    int ChoosenNuSliceID;
+    int TrueNuSliceID;
+    int TrueMuonTrackID;
+    int TrueProtonTrackID;
+    int TruePionTrackID;
+    int TrueGammaTrackID;
 
-	std::vector<RecoParticle> TracklikePrimaryDaughters;
-	std::vector<RecoParticle> ShowerlikePrimaryDaughters;
+    std::vector<int> SliceID;
+    std::vector<bool> GoodReco;
 
-	int TrueMuonIndex;
-	int TrueDecayProtonIndex;
-	int TrueDecayPionIndex;
+    std::vector<int> NPrimaryDaughters;
+    std::vector<int> NPrimaryTrackDaughters;
+    std::vector<int> NPrimaryShowerDaughters;
+    std::vector<std::vector<RecoParticle>> TracklikePrimaryDaughters;
+    std::vector<std::vector<RecoParticle>> ShowerlikePrimaryDaughters;
 
-	// Muon, proton and pion candidates
-	RecoParticle MuonCandidate;
-	RecoParticle DecayProtonCandidate;
-	RecoParticle DecayPionCandidate;
+    std::vector<TVector3> RecoPrimaryVertex;
 
-	Float_t SelectorBDTScore;
-	Float_t AnalysisBDTScore;
+    std::vector<std::vector<std::vector<int>>> ConnSeedIndexes_Plane0;
+    std::vector<std::vector<std::vector<int>>> ConnOutputIndexes_Plane0;
+    std::vector<std::vector<std::vector<int>>> ConnOutputSizes_Plane0;
+    std::vector<std::vector<std::vector<int>>> ConnSeedChannels_Plane0;
+    std::vector<std::vector<std::vector<int>>> ConnSeedTicks_Plane0;
 
-        vector<vector<int>> ConnSeedIndexes_Plane0;
-        vector<vector<int>> ConnOutputIndexes_Plane0;
-        vector<vector<int>> ConnOutputSizes_Plane0;
-        vector<vector<int>> ConnSeedChannels_Plane0;
-        vector<vector<int>> ConnSeedTicks_Plane0;
-        vector<vector<int>> ConnSeedIndexes_Plane1;
-        vector<vector<int>> ConnOutputIndexes_Plane1;
-        vector<vector<int>> ConnOutputSizes_Plane1;
-        vector<vector<int>> ConnSeedChannels_Plane1;
-        vector<vector<int>> ConnSeedTicks_Plane1;
-        vector<vector<int>> ConnSeedIndexes_Plane2;
-        vector<vector<int>> ConnOutputIndexes_Plane2;
-        vector<vector<int>> ConnOutputSizes_Plane2;
-        vector<vector<int>> ConnSeedChannels_Plane2;
-        vector<vector<int>> ConnSeedTicks_Plane2;
-    
-        vector<string> SysDials;
-        vector<vector<vector<double>>> SysWeights;
+    std::vector<std::vector<std::vector<int>>> ConnSeedIndexes_Plane1;
+    std::vector<std::vector<std::vector<int>>> ConnOutputIndexes_Plane1;
+    std::vector<std::vector<std::vector<int>>> ConnOutputSizes_Plane1;
+    std::vector<std::vector<std::vector<int>>> ConnSeedChannels_Plane1;
+    std::vector<std::vector<std::vector<int>>> ConnSeedTicks_Plane1;
 
-        void Print(){ std::cout << run << "  " << subrun << "  " << event << std::endl; }
+    std::vector<std::vector<std::vector<int>>> ConnSeedIndexes_Plane2;
+    std::vector<std::vector<std::vector<int>>> ConnOutputIndexes_Plane2;
+    std::vector<std::vector<std::vector<int>>> ConnOutputSizes_Plane2;
+    std::vector<std::vector<std::vector<int>>> ConnSeedChannels_Plane2;
+    std::vector<std::vector<std::vector<int>>> ConnSeedTicks_Plane2;
 
+	// Selection stuff
+    std::vector<RecoParticle> MuonCandidate;
+    std::vector<RecoParticle> DecayProtonCandidate;
+    std::vector<RecoParticle> DecayPionCandidate;
+
+    std::vector<Float_t> SelectorBDTScore;
+    std::vector<Float_t> AnalysisBDTScore;
+
+    // Systematics    
+    vector<string> SysDials;
+    vector<vector<vector<double>>> SysWeights;
+
+    void Print(){ std::cout << run << "  " << subrun << "  " << event << std::endl; }
 };
 
 #endif
