@@ -33,6 +33,10 @@ void SelectionPerformance()
 
       BuildTunes();
 
+      SampleNames.push_back("GENIE Background");
+      SampleTypes.push_back("EXT");
+      SampleFiles.push_back("reco_stage_2_hist.root");
+
       //SampleNames.push_back("GENIE Background");
       //SampleTypes.push_back("Background");
       //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Background_All.root");
@@ -75,19 +79,45 @@ void SelectionPerformance()
          else if(SampleTypes.at(i_s) == "Data") M.AddSample(SampleNames.at(i_s),SampleTypes.at(i_s),Data_POT);
          else if(SampleTypes.at(i_s) == "EXT") M.AddSample(SampleNames.at(i_s),SampleTypes.at(i_s),EXT_POT);
 
+         std::cout << "E.GetNEvents(): " << E.GetNEvents() << std::endl;
+
          // Event Loop
          for(int i = 0; i < E.GetNEvents(); i++)
          {
             if (i % 10000 == 0) std::cout << "Processing event " << i << "/" << E.GetNEvents() << std::endl;
 
+            std::cout << "1" << std::endl;
             Event e = E.GetEvent(i);
+            std::cout << "2" << std::endl;
             M.SetSignal(e);
+            std::cout << "3" << std::endl;
             M.AddEvent(e);
+            std::cout << "4" << std::endl;
 
             bool passed_FV=false,passed_Tracks=false,passed_Showers=false,passed_MuonID=false,passed_Selector=false,passed_Connectedness=false,passed_WCut=false,passed_AngleCut=false;
 
-            for (unsigned int iSlice = 0; iSlice < e.SliceID; ++iSlice)
+            for (unsigned int iSlice = 0; iSlice < e.SliceID.size(); ++iSlice)
             {
+                std::cout << "iSlice: " << iSlice << std::endl;
+
+                for (RecoParticle &recoParticle : e.TracklikePrimaryDaughters.at(iSlice))
+                {
+                    std::cout << "TrackParticle: " << std::endl;
+                    std::cout << "------------------------------------------" << std::endl;
+                    recoParticle.Print();
+                    std::cout << "------------------------------------------" << std::endl;
+                }
+
+
+                for (RecoParticle &recoParticle : e.ShowerlikePrimaryDaughters.at(iSlice))
+                {
+                    std::cout << "ShowerParticle: " << std::endl;
+                    std::cout << "------------------------------------------" << std::endl;
+                    recoParticle.Print();
+                    std::cout << "------------------------------------------" << std::endl;
+                }
+
+
                 if (CHEAT_SLICE_MODE && (e.SliceID.at(iSlice) != e.TrueNuSliceID))
                     continue;
 

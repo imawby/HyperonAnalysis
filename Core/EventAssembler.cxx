@@ -245,6 +245,17 @@ Event EventAssembler::GetEvent(int i){
 
    t_in->GetEntry(i);
 
+
+   std::cout << "TracklikePrimaryDaughters->size()" << TracklikePrimaryDaughters->size() << std::endl;
+
+   for (int i = 0; i < TracklikePrimaryDaughters->size(); ++i)
+   {
+       for (int j = 0; j < TracklikePrimaryDaughters->at(i).size(); ++j)
+       {
+           std::cout << "branch Self" << TracklikePrimaryDaughters->at(i).at(j).Self << std::endl;
+       }
+   }
+
    // General Info
    e.IsData = IsData;
    e.run = run;
