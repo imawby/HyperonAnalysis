@@ -74,7 +74,8 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchStatus("DecayVertex_X",1);
    t_in->SetBranchStatus("DecayVertex_Y",1);
    t_in->SetBranchStatus("DecayVertex_Z",1);
-   t_in->SetBranchStatus("ChoosenNuSliceID", 1);
+   t_in->SetBranchStatus("FlashMatchedNuSliceID", 1);
+   t_in->SetBranchStatus("PandoraNuSliceID", 1);
    t_in->SetBranchStatus("SliceID", 1);
    t_in->SetBranchStatus("TrueNuSliceID", 1);
    t_in->SetBranchStatus("TrueMuonTrackID", 1);
@@ -153,7 +154,8 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchAddress("DecayVertex_Y", &DecayVertex_Y);
    t_in->SetBranchAddress("DecayVertex_Z", &DecayVertex_Z);
 
-   t_in->SetBranchAddress("ChoosenNuSliceID", &ChoosenNuSliceID);
+   t_in->SetBranchAddress("FlashMatchedNuSliceID", &FlashMatchedNuSliceID);
+   t_in->SetBranchAddress("PandoraNuSliceID", &PandoraNuSliceID);
    t_in->SetBranchAddress("TrueNuSliceID", &TrueNuSliceID);
    t_in->SetBranchAddress("TrueMuonTrackID", &TrueMuonTrackID);
    t_in->SetBranchAddress("TrueProtonTrackID", &TrueProtonTrackID);
@@ -187,6 +189,8 @@ void EventAssembler::SetFile(string infilename,string sampletype){
    t_in->SetBranchAddress("ConnOutputSizes_Plane2", &ConnOutputSizes_Plane2);
    t_in->SetBranchAddress("ConnSeedChannels_Plane2", &ConnSeedChannels_Plane2);
    t_in->SetBranchAddress("ConnSeedTicks_Plane2", &ConnSeedTicks_Plane2);
+
+   std::cout << "blah" << std::endl;
 
    if (LoadWeights)
    {
@@ -245,17 +249,6 @@ Event EventAssembler::GetEvent(int i){
 
    t_in->GetEntry(i);
 
-
-   std::cout << "TracklikePrimaryDaughters->size()" << TracklikePrimaryDaughters->size() << std::endl;
-
-   for (int i = 0; i < TracklikePrimaryDaughters->size(); ++i)
-   {
-       for (int j = 0; j < TracklikePrimaryDaughters->at(i).size(); ++j)
-       {
-           std::cout << "branch Self" << TracklikePrimaryDaughters->at(i).at(j).Self << std::endl;
-       }
-   }
-
    // General Info
    e.IsData = IsData;
    e.run = run;
@@ -309,7 +302,8 @@ Event EventAssembler::GetEvent(int i){
    ////////////////////////////
    //   Output for each slice
    ////////////////////////////
-   e.ChoosenNuSliceID = ChoosenNuSliceID;
+   e.FlashMatchedNuSliceID = FlashMatchedNuSliceID;
+   e.PandoraNuSliceID = PandoraNuSliceID;
    e.TrueNuSliceID = TrueNuSliceID;
    e.TrueMuonTrackID = TrueMuonTrackID;
    e.TrueProtonTrackID = TrueProtonTrackID;

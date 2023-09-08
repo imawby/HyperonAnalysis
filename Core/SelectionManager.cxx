@@ -132,29 +132,34 @@ void SelectionManager::AddEvent(Event &e)
 {
    // Sample Orthogonality
 
-    std::cout << "." << std::endl;
+    //std::cout << "." << std::endl;
 
    if(thisSampleType == "Neutron" && !e.EventHasNeutronScatter){ e.Weight = 0.0; return; }
    if(thisSampleType != "Neutron" && e.EventHasNeutronScatter){ e.Weight = 0.0; return; }
    if(thisSampleType != "Hyperon" &&  e.EventHasHyperon){ e.Weight = 0.0; return; }
    if(thisSampleType == "Hyperon" &&  !e.EventHasHyperon){ e.Weight = 0.0; return; }
 
-    std::cout << ".." << std::endl;
+   //std::cout << ".." << std::endl;
 
    // Set flux weight if setup
    if(thisSampleType != "Data" && thisSampleType != "EXT"){
+       //std::cout << "1" << std::endl;
       if(fUseFluxWeight) e.Weight *= a_FluxWeightCalc.GetFluxWeight(e);        
+      //std::cout << "2" << std::endl;
       if(fUseGenWeight) {
+          //std::cout << "3" << std::endl;
          a_GenG4WeightCalc.LoadEvent(e);
+         //std::cout << "4" << std::endl;
          e.Weight *= a_GenG4WeightCalc.GetCVWeight();
+         //std::cout << "5" << std::endl;
       }
    }
 
-    std::cout << "..." << std::endl;
+   //std::cout << "..." << std::endl;
 
    if(thisSampleType != "Data") e.Weight *= thisSampleWeight;
 
-    std::cout << "...." << std::endl;
+   //std::cout << "...." << std::endl;
 
    for(size_t i_c=0;i_c<Cuts.size();i_c++){
       Cuts[i_c].fTotalEvents += e.Weight;    
@@ -187,9 +192,6 @@ void SelectionManager::UseGenWeight(bool usegenweight){
 
 void SelectionManager::SetSignal(Event &e)
 {
-    std::cout << "e.EventIsSignal: " << e.EventIsSignal << std::endl;
-    std::cout << "e.EventIsSignalSigmaZero: " << e.EventIsSignalSigmaZero << std::endl;
-
    e.EventIsSignal = false;
    e.EventIsSignalSigmaZero = false;
 
@@ -228,9 +230,6 @@ void SelectionManager::SetSignal(Event &e)
 
    e.EventIsSignal = std::find(e.IsSignal.begin(),e.IsSignal.end(), true) != e.IsSignal.end();
    e.EventIsSignalSigmaZero = std::find(e.IsSignalSigmaZero.begin(),e.IsSignalSigmaZero.end(), true) != e.IsSignalSigmaZero.end();
-
-    std::cout << "e.EventIsSignal: " << e.EventIsSignal << std::endl;
-    std::cout << "e.EventIsSignalSigmaZero: " << e.EventIsSignalSigmaZero << std::endl;
 
    // Do I care about good reco? not really... 
 }

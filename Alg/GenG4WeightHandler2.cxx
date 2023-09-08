@@ -28,11 +28,8 @@ void GenG4WeightHandler::LoadEvent(Event e){
 
    OrganiseWeights();
 
-   theWeightMap.resize(theWeights->size());
-
-   for(size_t i_tr=0;i_tr<theWeights->size();i_tr++)        
-      for(size_t i=0;i<theDials->size();i++)
-         theWeightMap.at(i_tr)[theDials->at(i)] = theWeights->at(i_tr).at(i);
+   for(size_t i=0;i<theDials->size();i++)
+       theWeightMap[theDials->at(i)] = theWeights->at(i);
 
 }
 
@@ -45,15 +42,12 @@ void GenG4WeightHandler::OrganiseWeights(){
 
    // remove unphysical weights
    for(size_t i_d=0;i_d<theDials->size();i_d++){
-      for(size_t i_tr=0;i_tr<theWeights->size();i_tr++){
-         for(size_t i_u=0;i_u<theWeights->at(i_tr).at(i_d).size();i_u++){
-            if (std::isinf(theWeights->at(i_tr).at(i_d).at(i_u))) theWeights->at(i_tr).at(i_d).at(i_u) = 1.0; 
-            if (std::isnan(theWeights->at(i_tr).at(i_d).at(i_u)) == 1) theWeights->at(i_tr).at(i_d).at(i_u) = 1.0;
-            if (theWeights->at(i_tr).at(i_d).at(i_u) > 100) theWeights->at(i_tr).at(i_d).at(i_u) = 1.0;
-         }
-      }
+       for(size_t i_u=0;i_u<theWeights->at(i_d).size();i_u++){
+           if (std::isinf(theWeights->at(i_d).at(i_u))) theWeights->at(i_d).at(i_u) = 1.0; 
+           if (std::isnan(theWeights->at(i_d).at(i_u)) == 1) theWeights->at(i_d).at(i_u) = 1.0;
+           if (theWeights->at(i_d).at(i_u) > 100) theWeights->at(i_d).at(i_u) = 1.0;
+       }
    }
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,27 +55,19 @@ void GenG4WeightHandler::OrganiseWeights(){
 double GenG4WeightHandler::GetCVWeight(){
 
    double weight = 1.0;
+   std::map<std::string,std::vector<double>>::iterator it;
 
-   for(size_t i_tr=0;i_tr<theWeights->size();i_tr++){ 
-
-      double thistruthweight = 1.0; 
-      std::map<std::string,std::vector<double>>::iterator it;
-
-      for(size_t i_d=0;i_d<CV_Dials.size();i_d++){
-         it = theWeightMap.at(i_tr).find(CV_Dials.at(i_d));
-         if(it == theWeightMap.at(i_tr).end())
-            throw std::invalid_argument("GENIE tune dial " + CV_Dials.at(i_d) + " has no weights");
-         thistruthweight *= it->second.at(0);
-      }
-
-      // Add some catches to remove unphysical weights
-      if (std::isinf(thistruthweight)) thistruthweight = 1.0; 
-      if (std::isnan(thistruthweight) == 1) thistruthweight = 1.0;
-      if (thistruthweight > 100) thistruthweight = 1.0;
-
-      // return product of the three CV weights
-      weight *= thistruthweight;
+   for(size_t i_d=0;i_d<CV_Dials.size();i_d++){
+       it = theWeightMap.find(CV_Dials.at(i_d));
+       if(it == theWeightMap.end())
+           throw std::invalid_argument("GENIE tune dial " + CV_Dials.at(i_d) + " has no weights");
+       weight *= it->second.at(0);
    }
+
+   // Add some catches to remove unphysical weights
+   if (std::isinf(weight)) weight = 1.0; 
+   if (std::isnan(weight) == 1) weight = 1.0;
+   if (weight > 100) weight = 1.0;
 
    return weight;
 }
@@ -97,38 +83,24 @@ std::vector<double> GenG4WeightHandler::GetWeights(std::string dial){
    bool altmodel = std::find(AltModel_Dials.begin(),AltModel_Dials.end(),dial) != AltModel_Dials.end();
    bool ccqe_rpa = dial == "RPA_CCQE_UBGenie";
 
-   std::vector<double> weights;
-
    if(!theWeightMap.size()){
       std::cout << "No weights, returning empty vector" << std::endl;
-      return weights;
+      return {};
    }
 
    std::map<std::string,std::vector<double>>::iterator it;
-   it = theWeightMap.at(0).find(dial); 
+   it = theWeightMap.find(dial); 
 
-   if(it == theWeightMap.at(0).end())
+   if(it == theWeightMap.end())
       throw std::invalid_argument("GENIE/G4 weights with label " + dial + " not found");
    
-   weights.resize(it->second.size());
+   std::vector<double> weights = it->second;   
 
-   for(size_t i_w=0;i_w<weights.size();i_w++) 
-      weights.at(i_w) = 1.0;
-   
-   for(size_t i_tr=0;i_tr<theWeightMap.size();i_tr++){
-      it = theWeightMap.at(i_tr).find(dial);
-      if(it->second.size() != weights.size())
-         throw std::invalid_argument("GENIE/G4 weights with label " + dial + " has size mismatch");
-
-      for(size_t i_w=0;i_w<weights.size();i_w++)
-         weights.at(i_w) *= it->second.at(i_w);   
-
-      // Divide out the central value tune weight
-      double tunedcentralvalue = theWeightMap.at(i_tr).find("TunedCentralValue_UBGenie")->second.at(0);
-      if(!g4_dial)      
-         for(size_t i_w=0;i_w<weights.size();i_w++)
-            weights.at(i_w) /= tunedcentralvalue;  
-   }
+   // Divide out the central value tune weight
+   double tunedcentralvalue = theWeightMap.find("TunedCentralValue_UBGenie")->second.at(0);
+   if(!g4_dial)      
+       for(size_t i_w=0;i_w<weights.size();i_w++)
+           weights.at(i_w) /= tunedcentralvalue;  
 
    if(cv_dial || multisim || ccqe_rpa) return weights;
    else if(altmodel){

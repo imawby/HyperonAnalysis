@@ -117,7 +117,7 @@ class SelectionManager {
       void UseGenWeight(bool usegenweight); 
 
    private:
-
+      //
       // Cut Data Management //
       const std::vector<std::string> CutTypes = { "FV" , "Tracks" , "Showers" , "MuonID" , "SubleadingTracks" , "DecaySelector" , "DecayAnalysis" , "Connectedness" , "InvariantMass" , "AlphaAngle" };
       void DeclareCuts();

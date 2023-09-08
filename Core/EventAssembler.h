@@ -98,7 +98,8 @@ class EventAssembler {
       ////////////////////////////
       //   Output for each slice
       ////////////////////////////
-      int ChoosenNuSliceID;
+      int FlashMatchedNuSliceID;
+      int PandoraNuSliceID;
       int TrueNuSliceID;
       int TrueMuonTrackID;
       int TrueProtonTrackID;

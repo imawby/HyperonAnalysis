@@ -11,4 +11,4 @@ export HYP_TOP=$PWD/
 export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$PWD/Core:$PWD/Alg:$PWD/ParameterSets:$PWD/SampleSets
 #export DATA_DIR=$PWD/data/
 #export DATA_DIR=$PWD/data/ntuples_Nov_2021/
-export DATA_DIR=/data/cthorpe/HyperonNtuples/
+export DATA_DIR=/uboone/app/users/imawby/HyperonAnalysis/data

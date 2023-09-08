@@ -13,7 +13,9 @@ R__LOAD_LIBRARY($HYP_TOP/lib/libParticleDict.so)
 #include "BayesianPosteriorPDF.h"
 
 bool CHEAT_SLICE_MODE = false;
-bool NORMAL_SLICE_MODE = false;
+bool FLASH_MATCHED_SLICE_MODE = true;
+bool PANDORA_SLICE_MODE = false;
+bool RECOVERY_MODE = false; // if flash matching didnt find anything.. then use the Pandora topological score
 bool RUN_OVER_ALL_SLICE = false;
 
    // Produces graph with efficiency, purity and S/sqrt(S+B)
@@ -23,7 +25,9 @@ bool RUN_OVER_ALL_SLICE = false;
 void SelectionPerformance()
 {
       std::cout << "\033[31m" << "CHEAT_SLICE_MODE? " << "\033[33m" << (CHEAT_SLICE_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
-      std::cout << "\033[31m" << "NORMAL_SLICE_MODE? " << "\033[33m" << (NORMAL_SLICE_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
+      std::cout << "\033[31m" << "FLASH_MATCHED_SLICE_MODE? " << "\033[33m" << (FLASH_MATCHED_SLICE_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
+      std::cout << "\033[31m" << "PANDORA_SLICE_MODE? " << "\033[33m" << (PANDORA_SLICE_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
+      std::cout << "\033[31m" << "RECOVERY_MODE? " << "\033[33m" << (RECOVERY_MODE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
       std::cout << "\033[31m" << "RUN_OVER_ALL_SLICE? " << "\033[33m" << (RUN_OVER_ALL_SLICE ? "yeppo " : "noppo ") << "\033[0m" << std::endl;
 
       // Diables TEfficiency warnings
@@ -33,21 +37,22 @@ void SelectionPerformance()
 
       BuildTunes();
 
-      SampleNames.push_back("GENIE Background");
-      SampleTypes.push_back("EXT");
-      SampleFiles.push_back("reco_stage_2_hist.root");
-
       //SampleNames.push_back("GENIE Background");
-      //SampleTypes.push_back("Background");
-      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Background_All.root");
+      //SampleTypes.push_back("EXT");
+      //SampleFiles.push_back("reco_stage_2_hist.root");
 
-      //SampleNames.push_back("GENIE Hyperon");
-      //SampleTypes.push_back("Hyperon");
-      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Hyperon_All.root");
+      SampleNames.push_back("GENIE Background");
+      SampleTypes.push_back("Background");
+      SampleFiles.push_back("run3b/BackgroundCV/hyperonNtuples_3b_Background_CV.root");
 
-      //SampleNames.push_back("GENIE Neutron");
-      //SampleTypes.push_back("Neutron");
-      //SampleFiles.push_back("run3b_RHC/analysisOutputRHC_Overlay_GENIE_Neutron_All.root");
+
+      SampleNames.push_back("GENIE Hyperon");
+      SampleTypes.push_back("Hyperon");
+      SampleFiles.push_back("run3b/HyperonCV/hyperonNtuples_3b_Hyperon_CV.root");
+
+      SampleNames.push_back("GENIE Neutron");
+      SampleTypes.push_back("Neutron");
+      SampleFiles.push_back("run3b/NeutronCV/hyperonNtuples_3b_Neutron_CV.root");
 
       //SampleNames.push_back("GENIE Dirt");
       //SampleTypes.push_back("Dirt");
@@ -61,7 +66,7 @@ void SelectionPerformance()
 
       std::string label = "test";
 
-      EventAssembler E;
+      EventAssembler E(false);
       SelectionManager M(P);
       M.SetPOT(POT);
       /* M.ImportSelectorBDTWeights(P.p_SelectorBDT_WeightsDir); */
@@ -86,18 +91,19 @@ void SelectionPerformance()
          {
             if (i % 10000 == 0) std::cout << "Processing event " << i << "/" << E.GetNEvents() << std::endl;
 
-            std::cout << "1" << std::endl;
+            //std::cout << "1" << std::endl;
             Event e = E.GetEvent(i);
-            std::cout << "2" << std::endl;
+            //std::cout << "2" << std::endl;
             M.SetSignal(e);
-            std::cout << "3" << std::endl;
+            //std::cout << "3" << std::endl;
             M.AddEvent(e);
-            std::cout << "4" << std::endl;
+            //std::cout << "4" << std::endl;
 
             bool passed_FV=false,passed_Tracks=false,passed_Showers=false,passed_MuonID=false,passed_Selector=false,passed_Connectedness=false,passed_WCut=false,passed_AngleCut=false;
 
             for (unsigned int iSlice = 0; iSlice < e.SliceID.size(); ++iSlice)
             {
+                /*
                 std::cout << "iSlice: " << iSlice << std::endl;
 
                 for (RecoParticle &recoParticle : e.TracklikePrimaryDaughters.at(iSlice))
@@ -116,18 +122,22 @@ void SelectionPerformance()
                     recoParticle.Print();
                     std::cout << "------------------------------------------" << std::endl;
                 }
+                */
 
 
                 if (CHEAT_SLICE_MODE && (e.SliceID.at(iSlice) != e.TrueNuSliceID))
                     continue;
 
-                if (NORMAL_SLICE_MODE && (e.SliceID.at(iSlice) != e.ChoosenNuSliceID))
+                if (FLASH_MATCHED_SLICE_MODE && (e.SliceID.at(iSlice) != e.FlashMatchedNuSliceID))
+                    continue;
+
+                if (PANDORA_SLICE_MODE && (e.SliceID.at(iSlice) != e.PandoraNuSliceID))
                     continue;
 
                 passed_FV = M.FiducialVolumeCut(e, iSlice);
-                //if(passed_FV) passed_Tracks = M.TrackCut(e);
-                //if(passed_Tracks) passed_Showers = M.ShowerCut(e);
-                //if(passed_Showers) passed_MuonID = M.ChooseMuonCandidate(e);
+                if(passed_FV) passed_Tracks = M.TrackCut(e, iSlice);
+                if(passed_Tracks) passed_Showers = M.ShowerCut(e, iSlice);
+                if(passed_Showers) passed_MuonID = M.ChooseMuonCandidate(e, iSlice);
             /* if(passed_MuonID) passed_Selector = M.ChooseProtonPionCandidates(e); */
             /* if(passed_Selector) passed_Connectedness = M.ConnectednessTest(e); */
             /* if(passed_Connectedness) passed_WCut = M.WCut(e); */
