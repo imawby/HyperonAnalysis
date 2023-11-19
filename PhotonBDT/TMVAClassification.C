@@ -161,7 +161,7 @@ void TMVAClassification( TString myMethodList = "" )
 
    // --- Here the preparation phase begins
 
-   TString fname = "/uboone/app/users/imawby/HyperonAnalysis/PhotonBDT/files/Hyperon_redo/photonBDTNtuples_run3b_Hyperon.root";
+   TString fname = "/uboone/data/users/imawby/PhotonBDT/photonBDTFilesTruncated.root";
 
    if (gSystem->AccessPathName( fname ))  // file does not exist in local directory
       gSystem->Exec("wget http://root.cern.ch/files/tmva_class_example.root");
@@ -171,8 +171,8 @@ void TMVAClassification( TString myMethodList = "" )
    std::cout << "--- TMVAClassification       : Using input file: " << input->GetName() << std::endl;
 
    // --- Register the training and test trees
-   TTree *signal     = (TTree*)input->Get("photonBDT/SigmaSignalTree");
-   TTree *background = (TTree*)input->Get("photonBDT/SigmaBackgroundTree");
+   TTree *signal     = (TTree*)input->Get("PhotonTree");
+   TTree *background = (TTree*)input->Get("BackgroundTree");
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
    TString outfileName( "TMVA.root" );
@@ -200,42 +200,16 @@ void TMVAClassification( TString myMethodList = "" )
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
    // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
    // branch, name, unit, type
-   dataloader->AddVariable("TrackShowerScore", "Track/Shower Score", "", 'D', -1, 2);
-   dataloader->AddVariable("NuVertexSeparation", "Nu Vertex Displacement", "[cm]", 'D');
-   dataloader->AddVariable("TrackParentSeparation", "Parent Displacement", "[cm]", 'D');
-   dataloader->AddVariable("ShowerOpeningAngle", "Shower Opening Angle", "[rad]", 'D');
-   dataloader->AddVariable("ShowerLength", "Shower Length", "[cm]", 'D');
+
    dataloader->AddVariable("NHits3D", "Number of SpacePoints", "", 'I');
    dataloader->AddVariable("NHits2D", "Number of 2D Hits", "", 'I');
-   //dataloader->AddVariable("TotalEnergy", "Total Energy (Track Hyp.)", "", 'D');
+   dataloader->AddVariable("NuVertexSeparation", "Nu Vertex Displacement", "[cm]", 'D');
    dataloader->AddVariable("NuVertexChargeDistribution", "Charge Weighted Radius", "[cm]", 'D');
    dataloader->AddVariable("InitialdEdx", "Initial dEdx", "[MeV]", 'D');
-
-   /*
-    double m_completeness;
-    double m_purity;
-    int m_generation;
-    int m_pandoraPFPCode;
-    double m_topologicalScore;
-    double m_nuVertexSeparation;
-    double m_trackParentSeparation;
-    double m_showerOpeningAngle;
-    double m_showerLength;
-    int m_nHits2D;
-    int m_nHits3D;
-    int m_nHitsU;
-    int m_nHitsV;
-    int m_nHitsW;
-    double m_totalEnergy;
-    double m_nuVertexChargeDistribution;
-    double m_initialdEdx;
-    std::vector<double> m_sigmaSystemEnergy;
-    std::vector<double> m_sigmaSystemOpeningAngle;
-    std::vector<double> m_sigmaSystemVertexSeparation;
-    std::vector<double> m_sigmaSystemTrack1;
-    std::vector<double> m_sigmaSystemTrack2;
-   */
-
+   dataloader->AddVariable("TrackShowerScore", "Track/Shower Score", "", 'D');
+   dataloader->AddVariable("ShowerOpeningAngle", "Shower Opening Angle", "[deg]", 'D');
+   dataloader->AddVariable("ShowerLength", "Shower Length", "[cm]", 'D');
+   dataloader->AddVariable("TrackParentSeparation", "Parent Displacement", "[cm]", 'D');
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
