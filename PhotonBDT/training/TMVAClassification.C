@@ -234,8 +234,8 @@ void TMVAClassification( TString myMethodList = "" )
    Double_t backgroundWeight = 1.0;
    
    // You can add an arbitrary number of signal or background trees
-   dataloader->AddSignalTree    ( signal,     signalWeight     );
-   dataloader->AddBackgroundTree( background, backgroundWeight );
+    dataloader->AddSignalTree    ( signal,     signalWeight     );
+    dataloader->AddBackgroundTree( background, backgroundWeight );
    
    // To give different trees for training and testing, do as follows:
    //    factory->AddSignalTree( signalTrainingTree, signalTrainWeight, "Training" );
@@ -279,8 +279,8 @@ void TMVAClassification( TString myMethodList = "" )
    // Set individual event weights (the variables must exist in the original TTree)
    //    for signal    : factory->SetSignalWeightExpression    ("weight1*weight2");
    //    for background: factory->SetBackgroundWeightExpression("weight1*weight2");
-   //factory->SetSignalWeightExpression( "weight" );
-   //factory->SetBackgroundWeightExpression( "weight" );
+   factory->SetSignalWeightExpression( "NHits2D" );
+   factory->SetBackgroundWeightExpression( "1.0 / NHits2D" );
    //factory->SetSignalWeightExpression( "projected_weight" );
    //factory->SetBackgroundWeightExpression( "projected_weight" );
    //factory->SetSignalWeightExpression( "projected_pot*energy_weight" );

@@ -9,9 +9,12 @@ void AddBDTScores()
     */
 
     TFile * file = new TFile("/uboone/data/users/imawby/PhotonBDT/photonBDTFiles.root", "UPDATE");
+    //TFile * file = new TFile("/uboone/app/users/imawby/larsoft_olderVersion/junk/reco_stage_2_hist.root", "UPDATE");
 
     TTree * signalTree = (TTree*)file->Get("photonBDT/PhotonTree");
     TTree * backgroundTree = (TTree*)file->Get("photonBDT/BackgroundTree");
+    //TTree * signalTree = (TTree*)file->Get("visualiseSlice/VisualisationTree");
+    //TTree * backgroundTree = (TTree*)file->Get("visualiseSlice/VisualisationTree");
 
     // Add new branch to 'selection' tree...
     float tmvaOutput;
@@ -20,6 +23,7 @@ void AddBDTScores()
 
     // Now hook up TMVA
     float nuVertexSeparation_tmva;
+    float dca_tmva;
     float nuVertexChargeDist_tmva;
     float initialdEdx_tmva;
     float trackShowerScore_tmva;
@@ -32,6 +36,7 @@ void AddBDTScores()
 
     TMVA::Reader * tmvaReader = new TMVA::Reader();
     tmvaReader->AddVariable("NuVertexSeparation", &nuVertexSeparation_tmva);
+    tmvaReader->AddVariable("DCA", &dca_tmva);
     tmvaReader->AddVariable("NuVertexChargeDistribution", &nuVertexChargeDist_tmva);
     tmvaReader->AddVariable("InitialdEdx", &initialdEdx_tmva);
     tmvaReader->AddVariable("TrackShowerScore", &trackShowerScore_tmva);
@@ -50,6 +55,7 @@ void AddBDTScores()
     {
         // Hook up to the 'selection' tree
         double nuVertexSeparation_tree;
+        double dca_tree;
         double nuVertexChargeDist_tree;
         double initialdEdx_tree;
         double trackShowerScore_tree;
@@ -61,6 +67,7 @@ void AddBDTScores()
         double LLRPIDReduced_tree;
 
         tree->SetBranchAddress("NuVertexSeparation", &nuVertexSeparation_tree); 
+        tree->SetBranchAddress("DCA", &dca_tree);
         tree->SetBranchAddress("NuVertexChargeDistribution", &nuVertexChargeDist_tree); 
         tree->SetBranchAddress("InitialdEdx", &initialdEdx_tree); 
         tree->SetBranchAddress("TrackShowerScore", &trackShowerScore_tree); 
@@ -76,6 +83,7 @@ void AddBDTScores()
             tree->GetEntry(i);
 
             nuVertexSeparation_tmva = RangeNuVertexSeparation(nuVertexSeparation_tree);
+            dca_tmva = RangeDCA(dca_tree);
             nuVertexChargeDist_tmva = RangeNuVertexChargeDistribution(nuVertexChargeDist_tree);
             initialdEdx_tmva = RangeInitialdEdx(initialdEdx_tree);
             trackShowerScore_tmva = RangeTrackScore(trackShowerScore_tree);
@@ -96,6 +104,7 @@ void AddBDTScores()
 
     file->cd();
     file->cd("photonBDT");
+    //file->cd("visualiseSlice");
 
     signalTree->Write("", TObject::kOverwrite);
     backgroundTree->Write("", TObject::kOverwrite);

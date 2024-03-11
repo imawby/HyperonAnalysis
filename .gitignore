@@ -7,6 +7,8 @@ sites
 *.o
 *.obj
 
+*~
+
 # Precompiled Headers
 *.gch
 *.pch
